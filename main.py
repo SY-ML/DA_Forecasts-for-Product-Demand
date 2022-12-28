@@ -1,7 +1,7 @@
 '''
 https://www.kaggle.com/datasets/felixzhao/productdemandforecasting/code
 '''
-
+import numpy as np
 import pandas as pd
 from pandas_profiling import ProfileReport
 import matplotlib.pyplot as plt
@@ -100,17 +100,48 @@ print(df.columns)
 # ls_pcat_top4 = [19, 6, 5, 7] #Demand 상위 97%의 제품 카테고리 번호
 
 # 웨어하우스 별
-grp_byWH = df.groupby('Warehouse', as_index=False).agg({'Product_Code':['nunique'],
-                                                        'Product_Category':['nunique'],
-                                                        'Order_Demand':['sum', 'min', 'max', 'mean', 'median', 'std']})
+# grp_byWH = df.groupby('Warehouse', as_index=False).agg({'Product_Code':['nunique'],
+#                                                         'Product_Category':['nunique'],
+#                                                         'Order_Demand':['sum', 'min', 'max', 'mean', 'median', 'std']})
 
-# sns.boxplot(data = grp_byWH, x='Warehouse', y='Order_Demand')
+# GROUP BY
+# print(grp_byWH.T)
+
+# Order Demand By Warehouse Boxplot
+# sns.boxplot(data = df, x='Warehouse', y='Order_Demand')
+# plt.title('ORDER DEMAND BOXPLOT BY WAREHOUSE')
 # plt.show()
-print(grp_byWH.T)
-print(grp_byWH)
-print(grp_byWH['Warehouse'])
-print(grp_byWH['Order_Demand'])
-print(grp_byWH['Order_Demand']['std'])
+
+## Order Demand
+# unique, counts = np.unique(df['Order_Demand'], return_counts=True)
+# sns.histplot(x=unique, y=counts, kde=True)
+# sns.kdeplot(df['Order_Demand'])
+
+# Positive/Negative Order Demand
+df_od = df.copy()
+df_od['OD_Positive'] = np.where(df_od['Order_Demand']>=0, 1, 0)
+
+# KDE PLOT
+# sns.kdeplot(df_od['Order_Demand'])
+# plt.title('DISTRIBUTION OF ORDER DEMAND')
+# plt.show()
+
+# PIE PLOT
+# plt.pie(df_od['OD_Positive'].value_counts(), labels = df_od['OD_Positive'].value_counts().index, autopct='%.1f')
+# plt.title('ORDER DEMAND POSITIVE/NEGATIVE')
+# plt.legend(loc='best')
+# plt.show()
+# print(df_od['OD_Positive'].value_counts())
+
+f, ax = plt.subplots(1, 2)
+sns.violinplot(data = df_od, x='Warehouse', y='Order_Demand', ax=ax[0])
+ax[0].set_title('Order Demand Distribution By Warehouse')
+sns.violinplot(data = df_od, x='Warehouse', y='Order_Demand', hue='OD_Positive', scale='count', split=True, ax=ax[1])
+ax[1].set_title('Order Demand Distribution By Warehouse (Positive/Negative)')
+f.suptitle('DISTRIBUTION OF ORDER DEMAND BY WAREHOUSE')
+plt.show()
+
+
 # grp_byPCAT['Demand_Proportion'] = (grp_byPCAT['Order_Demand']/grp_byPCAT['Order_Demand'].sum()) #전체 판매량의 기여도를 pct로 변환
 # grp_byPCAT['Demand_Accumulated'] = grp_byPCAT['Demand_Proportion'].cumsum() #기여도 누적합계
 # grp_byPCAT['Demand_80pct'] = 0
