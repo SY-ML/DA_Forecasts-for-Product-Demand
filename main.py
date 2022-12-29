@@ -133,14 +133,37 @@ df_od['OD_Positive'] = np.where(df_od['Order_Demand']>=0, 1, 0)
 # plt.show()
 # print(df_od['OD_Positive'].value_counts())
 
-f, ax = plt.subplots(1, 2)
-sns.violinplot(data = df_od, x='Warehouse', y='Order_Demand', ax=ax[0])
-ax[0].set_title('Order Demand Distribution By Warehouse')
-sns.violinplot(data = df_od, x='Warehouse', y='Order_Demand', hue='OD_Positive', scale='count', split=True, ax=ax[1])
-ax[1].set_title('Order Demand Distribution By Warehouse (Positive/Negative)')
-f.suptitle('DISTRIBUTION OF ORDER DEMAND BY WAREHOUSE')
-plt.show()
+# f, ax = plt.subplots(1, 2)
+# sns.violinplot(data = df_od, x='Warehouse', y='Order_Demand', ax=ax[0])
+# ax[0].set_title('Order Demand Distribution By Warehouse')
+# sns.violinplot(data = df_od, x='Warehouse', y='Order_Demand', hue='OD_Positive', scale='count', split=True, ax=ax[1])
+# ax[1].set_title('Order Demand Distribution By Warehouse (Positive/Negative)')
+# f.suptitle('DISTRIBUTION OF ORDER DEMAND BY WAREHOUSE')
+# plt.show()
 
+# Negative order demand가 있었던 창고/날짜 조사
+df_negOD = df_od[df['Order_Demand']<0 & df['Date'].notnull()]
+
+# 전/후 인덱스 확인
+# for i, row in df_negOD.iterrows():
+#  print(df.iloc[i-1:i+2])
+#  print('-')
+
+# (Date, Warehouse) with negative order demand
+record_negod = tuple(zip(df_negOD['Date'], df_negOD['Warehouse']))
+# print(len(record_negod))
+for data in record_negod:
+ data_date, data_wh = data
+ print(df[df['Date']==data_date & df['Warehouse']==data_wh])
+ print('-')
+
+
+# print(df_negOD)
+
+# ls_date_negOD = df_negOD['Date'].tolist()
+
+"""
+"""
 
 # grp_byPCAT['Demand_Proportion'] = (grp_byPCAT['Order_Demand']/grp_byPCAT['Order_Demand'].sum()) #전체 판매량의 기여도를 pct로 변환
 # grp_byPCAT['Demand_Accumulated'] = grp_byPCAT['Demand_Proportion'].cumsum() #기여도 누적합계
