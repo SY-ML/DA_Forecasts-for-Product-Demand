@@ -1,6 +1,8 @@
 '''
 https://www.kaggle.com/datasets/felixzhao/productdemandforecasting/code
 '''
+import datetime
+
 import numpy as np
 import pandas as pd
 from pandas_profiling import ProfileReport
@@ -20,10 +22,9 @@ style.use(['seaborn'])
 # import sweetviz as sv
 
 # if __name__ == '__main__':
-df = pd.read_csv('./archive/Historical Product Demand.csv', parse_dates=['Date'])
+df = pd.read_csv('./archive/Historical Product Demand.csv')
 # print(df.dtypes)
 # print(df.columns)
-
 """
 EDA Report
 """
@@ -41,6 +42,9 @@ df['Warehouse'] = df['Warehouse'].str.replace('Whse_', '')
 
 # Product_Category
 df['Product_Category'] = df['Product_Category'].str.replace('Category_', '').astype(int)
+
+# Date
+df['Date'] = pd.to_datetime(df['Date'], format='%Y/%m/%d').dt.date.replace({pd.NaT:np.nan})
 
 # Order Demand
 df['Order_Demand'] = df['Order_Demand'].replace('[)]', '', regex=True)
@@ -142,20 +146,60 @@ df_od['OD_Positive'] = np.where(df_od['Order_Demand']>=0, 1, 0)
 # plt.show()
 
 # Negative order demand가 있었던 창고/날짜 조사
-df_negOD = df_od[df['Order_Demand']<0 & df['Date'].notnull()]
+df_negOD = df_od[(df['Order_Demand']<0) & (df['Date'].notnull())] # Filter (negative order demand & not-null date data)
+grp_negOD = df_negOD.groupby(['Date', 'Warehouse'], as_index=False )['Product_Code'].nunique() #Date, WH 기준으로 그룹화 후 날짜/창고별 음수 order demand
+grp_negOD_sample = grp_negOD.sort_values(by=['Product_Code'], ascending=False).head() # Product 기준으로 정렬 후 상위 5개 데이터만 선택
+negOD_info = zip(grp_negOD_sample['Date'], grp_negOD_sample['Warehouse']) # Date, WH 코드를 결합
 
+def display_all_on():
+ pd.set_option('display.max_rows', None)
+ pd.set_option('display.max_columns', None)
+
+
+def display_all_off():
+ pd.reset_option('all', None)
+
+
+display_all_on()
+for info in negOD_info:
+ print(f"DATA: {info}")
+ view = df[(df['Date'] == info[0]) & (df['Warehouse'] == info[1])] # data for view based on the info
+ print(view[['Date', 'Warehouse', 'Product_Code', 'Order_Demand']].sort_values(by=['Product_Code']))
+ print('-')
+display_all_on()
+
+# Sum > Negative case
+grp_OD_sum = df.groupby(['Date', 'Product_Code', 'Warehouse'], as_index=False)['Order_Demand'].sum()
+grp_OD_negSum = grp_OD_sum[grp_OD_sum['Order_Demand']<0]
+print(grp_OD_negSum)
+# interval = 7
+display_all_on()
+
+# 2011년 10월 웨어하우스 S에서 Produdct 125 오더 디맨드
+print(df[(df['Date']>datetime.date(2011,10,1)) & (df['Date']<datetime.date(2011,10,30))& (df['Warehouse'] == 'S') & (df['Product_Code'] == 125)])
+exit()
+"""
+
+print(grp_negOD)
+# print(df_negOD['Date'].value_counts(dropna=False))
+# print(df_negOD['Warehouse'].value_counts(dropna=False))
 # 전/후 인덱스 확인
 # for i, row in df_negOD.iterrows():
 #  print(df.iloc[i-1:i+2])
 #  print('-')
 
 # (Date, Warehouse) with negative order demand
-record_negod = tuple(zip(df_negOD['Date'], df_negOD['Warehouse']))
+# record_negod = tuple(zip(df_negOD['Date'].dt.strftime('%Y%m%d'), df_negOD['Warehouse']))
+# print(record_negod)
 # print(len(record_negod))
-for data in record_negod:
- data_date, data_wh = data
- print(df[df['Date']==data_date & df['Warehouse']==data_wh])
- print('-')
+# for data in record_negod:
+#  data_date, data_wh = data
+#  print(df_negOD['Date'])
+#  print(data_date, data_wh)
+#  print(df[df['Date']==data_date. & df['Warehouse']==data_wh])
+#  print('-')
+#  break
+
 
 
 # print(df_negOD)
@@ -188,6 +232,7 @@ for data in record_negod:
 # sv_report = sv.analyze(df)
 # sv_report.show_html()
 exit()
+"""
 
 """
 결측치에서 패턴이 있을까?
