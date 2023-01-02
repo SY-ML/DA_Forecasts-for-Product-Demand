@@ -16,13 +16,9 @@ print(plt.style.available)
 
 """
 style.use(['seaborn'])
-# exit()
 
-# from autoviz import AutoViz_Class
-# import sweetviz as sv
-
-# if __name__ == '__main__':
-df = pd.read_csv('./archive/Historical Product Demand.csv')
+df = pd.read_csv('./archive/Historical Product Demand.csv', parse_dates=['Date'])
+# df = pd.read_csv('./archive/Historical Product Demand.csv')
 # print(df.dtypes)
 # print(df.columns)
 """
@@ -44,7 +40,7 @@ df['Warehouse'] = df['Warehouse'].str.replace('Whse_', '')
 df['Product_Category'] = df['Product_Category'].str.replace('Category_', '').astype(int)
 
 # Date
-df['Date'] = pd.to_datetime(df['Date'], format='%Y/%m/%d').dt.date.replace({pd.NaT:np.nan})
+# df['Date'] = pd.to_datetime(df['Date'], format='%Y/%m/%d').dt.date.replace({pd.NaT:np.nan})
 
 # Order Demand
 df['Order_Demand'] = df['Order_Demand'].replace('[)]', '', regex=True)
@@ -57,14 +53,14 @@ df['Order_Demand'] = df['Order_Demand'].astype(int)
 '''
 Time Data 
 '''
-# df['Year'] = df['Date'].dt.year #연도
-# df['Month'] = df['Date'].dt.month # 월
-# df['Week'] = df['Date'].dt.isocalendar().week # 주 (week of the year)
-# df['DayOW'] = df['Date'].dt.dayofweek #요일 (day of the week) FYI) Mon 0 - Sun = 6
-# df['Year'] = df['Date'].dt.year.astype('Int16') #연도
-# df['Month'] = df['Date'].dt.month.astype('Int16') # 월
-# df['Week'] = df['Date'].dt.isocalendar().week # 주 (week of the year)
-# df['DayOW'] = df['Date'].dt.dayofweek.astype('Int16') #요일 (day of the week) FYI) Mon 0 - Sun = 6
+df['Year'] = df['Date'].dt.year #연도
+df['Month'] = df['Date'].dt.month # 월
+df['Week'] = df['Date'].dt.isocalendar().week # 주 (week of the year)
+df['DayOW'] = df['Date'].dt.dayofweek #요일 (day of the week) FYI) Mon 0 - Sun = 6
+df['Year'] = df['Date'].dt.year.astype('Int16') #연도
+df['Month'] = df['Date'].dt.month.astype('Int16') # 월
+df['Week'] = df['Date'].dt.isocalendar().week # 주 (week of the year)
+df['DayOW'] = df['Date'].dt.dayofweek.astype('Int16') #요일 (day of the week) FYI) Mon 0 - Sun = 6
 
 # print(df[['Date', 'Year', 'Month', 'Week', 'DayOW']])
 
@@ -122,8 +118,8 @@ print(df.columns)
 # sns.kdeplot(df['Order_Demand'])
 
 # Positive/Negative Order Demand
-df_od = df.copy()
-df_od['OD_Positive'] = np.where(df_od['Order_Demand']>=0, 1, 0)
+# df_od = df.copy()
+# df_od['OD_Positive'] = np.where(df_od['Order_Demand']>=0, 1, 0)
 
 # KDE PLOT
 # sns.kdeplot(df_od['Order_Demand'])
@@ -146,10 +142,10 @@ df_od['OD_Positive'] = np.where(df_od['Order_Demand']>=0, 1, 0)
 # plt.show()
 
 # Negative order demand가 있었던 창고/날짜 조사
-df_negOD = df_od[(df['Order_Demand']<0) & (df['Date'].notnull())] # Filter (negative order demand & not-null date data)
-grp_negOD = df_negOD.groupby(['Date', 'Warehouse'], as_index=False )['Product_Code'].nunique() #Date, WH 기준으로 그룹화 후 날짜/창고별 음수 order demand
-grp_negOD_sample = grp_negOD.sort_values(by=['Product_Code'], ascending=False).head() # Product 기준으로 정렬 후 상위 5개 데이터만 선택
-negOD_info = zip(grp_negOD_sample['Date'], grp_negOD_sample['Warehouse']) # Date, WH 코드를 결합
+# df_negOD = df_od[(df['Order_Demand']<0) & (df['Date'].notnull())] # Filter (negative order demand & not-null date data)
+# grp_negOD = df_negOD.groupby(['Date', 'Warehouse'], as_index=False )['Product_Code'].nunique() #Date, WH 기준으로 그룹화 후 날짜/창고별 음수 order demand
+# grp_negOD_sample = grp_negOD.sort_values(by=['Product_Code'], ascending=False).head() # Product 기준으로 정렬 후 상위 5개 데이터만 선택
+# negOD_info = zip(grp_negOD_sample['Date'], grp_negOD_sample['Warehouse']) # Date, WH 코드를 결합
 
 def display_all_on():
  pd.set_option('display.max_rows', None)
@@ -160,24 +156,57 @@ def display_all_off():
  pd.reset_option('all', None)
 
 
-display_all_on()
-for info in negOD_info:
- print(f"DATA: {info}")
- view = df[(df['Date'] == info[0]) & (df['Warehouse'] == info[1])] # data for view based on the info
- print(view[['Date', 'Warehouse', 'Product_Code', 'Order_Demand']].sort_values(by=['Product_Code']))
- print('-')
-display_all_on()
+# display_all_on()
+## for info in negOD_info:
+#  print(f"DATA: {info}")
+#  view = df[(df['Date'] == info[0]) & (df['Warehouse'] == info[1])] # data for view based on the info
+#  print(view[['Date', 'Warehouse', 'Product_Code', 'Order_Demand']].sort_values(by=['Product_Code']))
+#  print('-')
 
-# Sum > Negative case
-grp_OD_sum = df.groupby(['Date', 'Product_Code', 'Warehouse'], as_index=False)['Order_Demand'].sum()
-grp_OD_negSum = grp_OD_sum[grp_OD_sum['Order_Demand']<0]
-print(grp_OD_negSum)
-# interval = 7
-display_all_on()
+# # Sum > Negative case
+# grp_OD_sum = df.groupby(['Date', 'Product_Code', 'Warehouse'], as_index=False)['Order_Demand'].sum()
+# grp_OD_negSum = grp_OD_sum[grp_OD_sum['Order_Demand']<0]
+# print(grp_OD_negSum)
 
-# 2011년 10월 웨어하우스 S에서 Produdct 125 오더 디맨드
-print(df[(df['Date']>datetime.date(2011,10,1)) & (df['Date']<datetime.date(2011,10,30))& (df['Warehouse'] == 'S') & (df['Product_Code'] == 125)])
-exit()
+# # 2011년 10월 웨어하우스 S에서 Produdct 125 오더 디맨드
+# print(df[(df['Date']>datetime.date(2011,10,1)) & (df['Date']<datetime.date(2011,10,30))& (df['Warehouse'] == 'S') & (df['Product_Code'] == 125)])
+
+"""
+EDA with Time Series
+"""
+# Order Demand by year and date
+
+# df['Year_Month'] = df
+
+f, ax = plt.subplots(1, 2)
+od_by_date = df.groupby('Date', as_index=False)['Order_Demand'].sum()
+print(od_by_date)
+od_by_year = df.groupby('Year', as_index=False)['Order_Demand'].sum()
+print(od_by_year)
+ax[0].plot(od_by_date['Date'], od_by_date['Order_Demand'])
+ax[1].plot(od_by_year['Year'], od_by_year['Order_Demand'])
+# ax[1].plot(od_by_['Year'], od_by_date['Order_Demand'], label = 'Order_Demand')
+# f.tight_layout()
+# plt.title('Order Demand by Date')
+plt.show()
+
+
+## Product_Category
+## Warehouse
+# ls_time_cols = ['Year', 'Month', 'Week']
+# ls_time_cols = ['Year', 'Date']
+# f, ax = plt.subplots(1, 3)
+# for i, col_time in enumerate(ls_time_cols):
+#  for wh in df['Warehouse'].unique():
+#   ax[i].plot(data = df[df['Warhouse'] == wh], x = col_time, y = 'Order_Demand', label = wh)
+#   ax[i].le
+#
+
+#  sns.lineplot(data = df, x=col_time, y='Order_Demand', hue='Warehouse', ax=ax[i])
+#  ax[i].set_title(f"Order Demand and {col_time} By Warehouse")
+# plt.show()
+
+
 """
 
 print(grp_negOD)
@@ -238,7 +267,7 @@ exit()
 결측치에서 패턴이 있을까?
 """
 
-
+"""
 # 결측치만 모아둔 데이터 프레임 생성
 df_null = df.copy()[df['Date'].isnull()]
 # cnt_cols = len(df_null.columns)
@@ -280,6 +309,7 @@ del df_null
 df = df.loc[df['Warehouse'] != "Whse_A"]
 print(df.shape)
 
+"""
 
 
 
