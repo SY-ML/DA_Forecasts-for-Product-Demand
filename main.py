@@ -174,21 +174,44 @@ def display_all_off():
 """
 EDA with Time Series
 """
+# Additional Time features
+df['Year_Month'] = df['Date'].dt.strftime('%Y-%m')
+df['Year_Week'] = df['Date'].dt.strftime('%Y-%W')
+
+
 # Order Demand by year and date
+cols_view = ['Year', 'Year_Month', 'Year_Week', 'Date']
 
-# df['Year_Month'] = df
+# Data Distribution Check
+for col in cols_view:
 
-f, ax = plt.subplots(1, 2)
-od_by_date = df.groupby('Date', as_index=False)['Order_Demand'].sum()
-print(od_by_date)
-od_by_year = df.groupby('Year', as_index=False)['Order_Demand'].sum()
-print(od_by_year)
-ax[0].plot(od_by_date['Date'], od_by_date['Order_Demand'])
-ax[1].plot(od_by_year['Year'], od_by_year['Order_Demand'])
-# ax[1].plot(od_by_['Year'], od_by_date['Order_Demand'], label = 'Order_Demand')
-# f.tight_layout()
-# plt.title('Order Demand by Date')
+ print(df.groupby(col, as_index=False).agg({col:['count'], 'Order_Demand':['sum']}))
+ sns.histplot(data=df, x=col, kde=True)
+ # 데이터 수 히스토그램, 오더 합계 섭플랏으로 시각화
+ plt.title(f'Data Distribution by {col}')
+ plt.xticks(rotation=60, fontsize=6)
+ plt.show()
+
+# # Order demand by each time unit
+# for i, col in enumerate(cols_view):
+#  data_grp = df.groupby(col, as_index=False)['Order_Demand'].sum()
+#  plt.plot(data_grp[col], data_grp['Order_Demand'], label = col)
+#  plt.title(f'Order Demand by {col}')
+#  plt.xticks(rotation=60, fontsize=6)
+#  plt.tight_layout()
+#  plt.show()
+
+"""
+# Subplots을 이용하고 싶다면?
+f, ax = plt.subplots(1, len(cols_view))
+for i, col in enumerate(cols_view):
+ data_grp = df.groupby(col, as_index=False)['Order_Demand'].sum()
+ ax[i].plot(data_grp[col], data_grp['Order_Demand'], label = col)
+ ax[i].set_title(f'Order Demand by {col}')
+ ax[i].set_xticklabels(ax[i].get_xticks(), rotation = 70)
+f.tight_layout()
 plt.show()
+"""
 
 
 ## Product_Category
