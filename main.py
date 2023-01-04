@@ -182,24 +182,29 @@ df['Year_Week'] = df['Date'].dt.strftime('%Y-%W')
 # Order Demand by year and date
 cols_view = ['Year', 'Year_Month', 'Year_Week', 'Date']
 
-# Data Distribution Check
-for col in cols_view:
+# # Data Distribution Check
+# print(df.groupby('Year')['Order_Demand'].count())
+# print(df['Date'].min(), df['Date'].max())
+#
+# for col in cols_view:
+#  df_view = df.copy().sort_values(by=col)
+#  # sns.barplot(data=data, kde=True)
+#  sns.histplot(data=df_view, x=col, kde=True)
+#  # sns.histplot(data=df, x=col, kde=True)
+#  plt.title(f'Number of Data by {col}')
+#  plt.xticks(rotation=60, fontsize=6)
+#  plt.show()
 
- print(df.groupby(col, as_index=False).agg({col:['count'], 'Order_Demand':['sum']}))
- sns.histplot(data=df, x=col, kde=True)
- # 데이터 수 히스토그램, 오더 합계 섭플랏으로 시각화
- plt.title(f'Data Distribution by {col}')
+# Order demand by each time unit
+for i, col in enumerate(cols_view):
+ data_grp = df.groupby(col, as_index=False)['Order_Demand'].sum()
+ plt.plot(data_grp[col], data_grp['Order_Demand'], label = col)
+ plt.title(f'Order Demand by {col}')
  plt.xticks(rotation=60, fontsize=6)
+ plt.tight_layout()
  plt.show()
 
-# # Order demand by each time unit
-# for i, col in enumerate(cols_view):
-#  data_grp = df.groupby(col, as_index=False)['Order_Demand'].sum()
-#  plt.plot(data_grp[col], data_grp['Order_Demand'], label = col)
-#  plt.title(f'Order Demand by {col}')
-#  plt.xticks(rotation=60, fontsize=6)
-#  plt.tight_layout()
-#  plt.show()
+# Warehouse Perspective
 
 """
 # Subplots을 이용하고 싶다면?
