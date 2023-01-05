@@ -196,15 +196,47 @@ cols_view = ['Year', 'Year_Month', 'Year_Week', 'Date']
 #  plt.show()
 
 # Order demand by each time unit
-for i, col in enumerate(cols_view):
- data_grp = df.groupby(col, as_index=False)['Order_Demand'].sum()
- plt.plot(data_grp[col], data_grp['Order_Demand'], label = col)
- plt.title(f'Order Demand by {col}')
- plt.xticks(rotation=60, fontsize=6)
- plt.tight_layout()
- plt.show()
+# for i, col in enumerate(cols_view):
+#  data_grp = df.groupby(col, as_index=False)['Order_Demand'].sum()
+#  plt.plot(data_grp[col], data_grp['Order_Demand'], label = col)
+#  plt.title(f'Order Demand by {col}')
+#  plt.xticks(rotation=60, fontsize=6)
+#  plt.tight_layout()
+#  plt.show()
 
 # Warehouse Perspective
+cols_view = ['Year', 'Year_Month', 'Year_Week', 'Date']
+ls_wh = df['Warehouse'].unique()
+
+for col in cols_view:
+ data = df.groupby([col, 'Warehouse'], as_index=False)['Order_Demand']
+ od_sum = data.sum()
+ od_mean = data.mean()
+ sns.lineplot(data= od_sum, x=col, y='Order_Demand', hue='Warehouse')
+ twin_x = plt.twinx()
+ sns.lineplot(data= od_mean, x=col, y='Order_Demand', hue='Warehouse', ax=twin_x, linestyle='dashed')
+ # twin_x.lines.set_linestyle('--')
+ # sns.barplot(data= od_mean, x=col, y='Order_Demand', hue='Warehouse', ax=twin_x)
+ plt.legend()
+ plt.title(f'Total Order Demand by {col}')
+ plt.xticks(rotation=60, fontsize=6)
+
+ plt.show()
+
+ # for i, wh in enumerate(ls_wh):
+ #
+ #  df_wh = df[df['Warehouse'] == wh].groupby(col, as_index=False)['Order_Demand']
+ #  ax[i].plot(df_wh.sum())
+ #  # options for each plot
+ #  ax[i].set_title(f'Total Order Demand by Warehouse & {col}')
+ #  ax[i].legend()
+ # f.tight_layout()
+ plt.show()
+
+# del f, ax
+
+
+
 
 """
 # Subplots을 이용하고 싶다면?
