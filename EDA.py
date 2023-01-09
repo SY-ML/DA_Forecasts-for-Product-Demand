@@ -40,6 +40,7 @@ df['Warehouse'] = df['Warehouse'].str.replace('Whse_', '')
 df['Product_Category'] = df['Product_Category'].str.replace('Category_', '').astype(int)
 
 # Date
+# df['Date'] = pd.to_datetime(df['Date'], format='%Y/%m/%d').dt.date
 # df['Date'] = pd.to_datetime(df['Date'], format='%Y/%m/%d').dt.date.replace({pd.NaT:np.nan})
 
 # Order Demand
@@ -182,7 +183,7 @@ df['Year_Week'] = df['Date'].dt.strftime('%Y-%W')
 
 
 # Order Demand by year and date
-cols_view = ['Year', 'Year_Month', 'Year_Week', 'Date']
+# cols_view = ['Year', 'Year_Month', 'Year_Week', 'Date']
 
 # # Data Distribution Check
 # print(df.groupby('Year')['Order_Demand'].count())
@@ -206,10 +207,14 @@ cols_view = ['Year', 'Year_Month', 'Year_Week', 'Date']
 #  plt.tight_layout()
 #  plt.show()
 
-# Order Demand Boxplot by Day of the Week
+# # Order Demand Boxplot by Time
+# cols_view = ['Year', 'Month', 'Week', 'DayOW']
 # df_view = df.copy().dropna()
-# sns.boxplot(data = df_view, x='DayOW', y='Order_Demand')
-# plt.show()
+# for col in cols_view:
+#  sns.boxplot(data = df_view, x=col, y='Order_Demand')
+#  plt.title(f'Order Demand Boxplot by {col}')
+#  plt.xticks(rotation = 60, fontsize = 6)
+#  plt.show()
 
 # # Order Demand by Time (Warehouse Perspective)
 # cols_view = ['Year', 'Year_Month', 'Year_Week', 'Date']
@@ -226,11 +231,60 @@ cols_view = ['Year', 'Year_Month', 'Year_Week', 'Date']
 
 
 ## Product Category Perspective
-cols_view = ['Year', 'Year_Month', 'Year_Week', 'Date']
-for col in cols_view:
- df_view = df.groupby([col, 'Product_Category'], as_index=False)['Order_Demand'].sum()
- sns.lineplot(data = df_view, x=col, y='Order_Demand', hue='Product_Category')
- plt.xticks(rotation=60, fontsize=8)
- plt.title(f'Product Category Demand by {col}')
- plt.legend()
- plt.show()
+# cols_view = ['Year', 'Year_Month', 'Year_Week', 'Date']
+# for col in cols_view:
+#  df_view = df.groupby([col, 'Product_Category'], as_index=False)['Order_Demand'].sum()
+#  sns.lineplot(data = df_view, x=col, y='Order_Demand', hue='Product_Category')
+#  plt.xticks(rotation=60, fontsize=8)
+#  plt.title(f'Product Category Demand by {col}')
+#  plt.legend()
+#  plt.show()
+
+# Seasonal Decomposition
+import statsmodels.api as sm
+df_od = df.groupby('Date')['Order_Demand'].sum()
+
+# 오더 디맨드 시각화
+# plt.plot(df_od)
+# plt.show()
+# >> additive 모델 적용
+#
+# for i, period in enumerate([7, 30, 90, 180, 365]):
+#  decomposition = sm.tsa.seasonal_decompose(df_od, model='additive', period=period)
+#  decomposition.plot()
+#  plt.title(f'Seasonal Decomposition (Period = {period})')
+#  plt.show()
+
+
+""" Missing Values """
+
+df_null = df[df['Date'].isnull()][['Product_Code', 'Warehouse', 'Product_Category', 'Date', 'Order_Demand']]
+
+# # cnt_cols = len(df_null.columns)
+# for i, col in enumerate(df_null.columns):
+#     plt.pie(df_null[col].value_counts(), labels = df_null[col].value_counts().index)
+#     plt.title(f'Missing Values by {col}')
+#     plt.legend()
+#     plt.show()
+
+# # 결측치: Order Demand 음수/양수 비율 확인하기
+# df_null['Positive_Demand'] = np.where(df_null['Order_Demand']>=0, 1, 0)
+# plt.pie(df_null['Positive_Demand'].value_counts(), labels = df_null['Positive_Demand'].value_counts().index, autopct='%.0f')
+# plt.legend()
+# plt.title("Positive/Negative Demand Proportion")
+# plt.show()
+
+# 웨어하우스 별 총 수량 및 비중
+total_demand = df['Order_Demand'].sum()
+for wh in df['Warehouse'].unique():
+    wh_demand = df[df['Warehouse'] == wh]['Order_Demand'].sum()
+    print(wh, wh_demand, f'({wh_demand/total_demand*100:.2f}%)')
+
+# 웨어하우스 A의 Date 데이터 범위
+print(df[df['Warehouse'] == 'A']['Date'].describe())
+
+# 웨어하우스 별 오더 총수량, 평균수량, 표준편차, 데이터 수
+print(df.groupby(['Warehouse']).agg({'Order_Demand': ['sum', 'mean', 'std', 'count']}))
+
+# 웨어하우스 별 오더 총수량, 평균수량, 표준편차, 데이터 수
+print(df.groupby(['Warehouse']).agg({'Product_Code': ['nunique'], 'Product_Category':['nunique']}))
