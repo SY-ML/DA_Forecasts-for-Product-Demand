@@ -242,7 +242,7 @@ df['Year_Week'] = df['Date'].dt.strftime('%Y-%W')
 
 # Seasonal Decomposition
 import statsmodels.api as sm
-df_od = df.groupby('Date')['Order_Demand'].sum()
+# df_od = df.groupby('Date')['Order_Demand'].sum()
 
 # 오더 디맨드 시각화
 # plt.plot(df_od)
@@ -276,15 +276,52 @@ df_null = df[df['Date'].isnull()][['Product_Code', 'Warehouse', 'Product_Categor
 
 # 웨어하우스 별 총 수량 및 비중
 total_demand = df['Order_Demand'].sum()
-for wh in df['Warehouse'].unique():
-    wh_demand = df[df['Warehouse'] == wh]['Order_Demand'].sum()
-    print(wh, wh_demand, f'({wh_demand/total_demand*100:.2f}%)')
+# for wh in df['Warehouse'].unique():
+#     wh_demand = df[df['Warehouse'] == wh]['Order_Demand'].sum()
+#     print(wh, wh_demand, f'({wh_demand/total_demand*100:.2f}%)')
+#
+# # 웨어하우스 A의 Date 데이터 범위
+# print(df[df['Warehouse'] == 'A']['Date'].describe())
+#
+# # 웨어하우스 별 오더 총수량, 평균수량, 표준편차, 데이터 수
+# print(df.groupby(['Warehouse']).agg({'Order_Demand': ['sum', 'mean', 'std', 'count']}))
+#
+# # 웨어하우스 별 오더 총수량, 평균수량, 표준편차, 데이터 수
+# print(df.groupby(['Warehouse']).agg({'Product_Code': ['nunique'], 'Product_Category':['nunique']}))
 
-# 웨어하우스 A의 Date 데이터 범위
-print(df[df['Warehouse'] == 'A']['Date'].describe())
 
-# 웨어하우스 별 오더 총수량, 평균수량, 표준편차, 데이터 수
-print(df.groupby(['Warehouse']).agg({'Order_Demand': ['sum', 'mean', 'std', 'count']}))
+# Date 결측치 데이터 수와 Order Demand 합의 비중 : 웨어하우스 A & 전체데이터
+df_null = df.loc[df['Date'].isnull()].copy()
+df_whA = df.loc[df['Warehouse'] == 'A'].copy()
+#
+# print(f'Null count / WH A count = {len(df_null) / len(df_whA)*100:.4f}%') #null 데이터가 WH A 데이터에서 차지하는 비중
+# print(f"Null demand / WH A demand = {df_null['Order_Demand'].sum() / df_whA['Order_Demand'].sum()*100:.4f}%")
+#
+# print(f'Null count / total count = {len(df_null) / len(df)*100:.4f}%') #null 데이터가 전체 데이터에서 차지하는 비중
+# print(f"Null demand / total demand = {df_null['Order_Demand'].sum() / df['Order_Demand'].sum()*100:.4f}%")
+#
+# print(f'WH A count / total count = {len(df_whA) / len(df)*100:.4f}%') #WH A 데이터가 전체 데이터에서 차지하는 비중
+# print(f"WH A demand / total demand = {df_whA['Order_Demand'].sum() / df['Order_Demand'].sum()*100:.4f}%")
 
-# 웨어하우스 별 오더 총수량, 평균수량, 표준편차, 데이터 수
-print(df.groupby(['Warehouse']).agg({'Product_Code': ['nunique'], 'Product_Category':['nunique']}))
+# 데이터 / Order Demand 구성 확인
+# df_null['OD_Pos'] = np.where(df_null['Order_Demand']>=0, 1, 0)
+# df_whA['OD_Pos'] = np.where(df_whA['Order_Demand']>=0, 1, 0)
+# grp_null = df_null.groupby('OD_Pos', as_index=False).agg({'Order_Demand':['sum', 'count']})
+# grp_whA = df_whA.groupby('OD_Pos', as_index=False).agg({'Order_Demand':['sum', 'count']})
+# print(grp_null)
+# print(grp_whA)
+
+
+# TODO-main reset index
+df = df.loc[df['Warehouse'] != 'A']
+
+# Duplicate check
+df_dupe = df[df.duplicated()]
+idx_dupe = df_dupe.index.tolist()
+df_check = df.copy()
+# df_check['Dupe'] = np.where(df_check.index in idx_dupe, 1, 0)
+print(f'Percentage of dupe = {len(df_dupe)/len(df)*100:.2f}%')
+print(df_dupe[['Product_Code', 'Warehouse', 'Product_Category', 'Date', 'Order_Demand']].sort_values(by=['Warehouse', 'Date', 'Order_Demand']))
+
+display_all_on()
+print(df_check[(df_check['Date'] == datetime.datetime(2012,1,10)) & (df_check['Warehouse'] == 'C')][['Product_Category', 'Product_Code', 'Order_Demand']].sort_values(by=['Product_Category', 'Product_Code', 'Order_Demand']))
