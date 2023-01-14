@@ -1,4 +1,4 @@
-import pandas
+import pandas as pd
 import pyarrow.csv as pv
 import pyarrow.parquet as pq
 import numpy as np
