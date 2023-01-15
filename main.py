@@ -31,13 +31,6 @@ def timeit(func):
         return result
     return timeit_wrapper
 
-def display_all_on():
- pd.set_option('display.max_rows', None)
- pd.set_option('display.max_columns', None)
-
-
-def display_all_off():
- pd.reset_option('all', None)
 
 path_dataset = './archive'
 path = './archive/Historical Product Demand.csv' # path of the original dataset

@@ -26,6 +26,7 @@ class EconomicData_Setup():
         if index_name not in dict_indexes.keys():
             raise KeyError
 
+        df = pd.DataFrame(fetch_series(dict))
         for key in dict:
             path = f'{self.path}/economic_indicators/{dict_indexes[index_name]}_{index_name}_{key}.csv'
             print(f"saving to {path}")
