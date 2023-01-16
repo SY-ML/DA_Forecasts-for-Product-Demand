@@ -1,9 +1,12 @@
 import pandas as pd
 import numpy as np
+from main_settings import Path_Settings
+
+ps = Path_Settings()
 
 class Dataset():
-    def __init__(self, path_pq):
-        self.df = pd.read_parquet(path_pq)
+    def __init__(self):
+        self.df = pd.read_parquet(ps.path_dataset_processed_in_parquet)
         self.ttod_pdcd = self.total_order_demand_by('Product_Code')
         self.ttod_pdcat = self.total_order_demand_by('Product_Category')
         self.ttod_date = self.total_order_demand_by('Date')

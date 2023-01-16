@@ -3,11 +3,15 @@ import pyarrow.csv as pv
 import pyarrow.parquet as pq
 import numpy as np
 
+from main_settings import Path_Settings
+
+ps = Path_Settings()
+
 class Dataset_Setup():
-    def __init__(self, path_orgcsv, path_prcdcsv, path_prcdpq):
-        self.path = path_orgcsv # path of the original dataset
-        self.path_prcd = path_prcdcsv #path of dataset to be processed
-        self.path_parquet = path_prcdpq # path of the dataset to be processed in a parquet format
+    def __init__(self):
+        self.path = ps.path_dataset_original
+        self.path_prcd = ps.path_dataset_processed
+        self.path_parquet = ps.path_dataset_processed_in_parquet
 
         self.df_org = pd.read_csv(self.path, parse_dates=['Date']) # original dataset read
         self.df = self.df_org.loc[self.df_org['Warehouse'] != 'Whse_A'].reset_index(drop = True) # dataset with added time features
