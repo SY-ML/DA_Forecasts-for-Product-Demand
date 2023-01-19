@@ -30,8 +30,18 @@ class Countries():
         for data_subdiv in data_set:
             ISO_3166_2_state = data_subdiv.code
             ls_subdivs.append(ISO_3166_2_state)
-            stations = Stations().region(ISO3166_1_alpha_2_code, ISO_3166_2_state)
-            print(stations.fetch(10, sample=True))
+            stations = Stations()
+            country_code, state_code = ISO_3166_2_state.split('-')
+            print(f'country_code / state_code = {country_code} / {state_code}')
+            stations = stations.region(country_code, state_code)
+            stations = stations.inventory('monthly')
+            stations = stations.fetch()
+            from utils.pandas_display import Display_Option
+            Display_Option()
+            print(stations.head())
+            print(stations.columns)
+            break
+
 
 
         # stations = Stations()
