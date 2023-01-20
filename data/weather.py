@@ -18,38 +18,37 @@ class Countries():
     def __init__(self):
         alpha2_China = 'CN'
         alpha2_UnitedStates = 'US'
+        self.rgn_CN = self.get_region_information_by_subdivision(alpha2_China)
+        self.rgn_US = self.get_region_information_by_subdivision(alpha2_UnitedStates)
 
-        self.get_ISO3166_2_subdivision_code(ISO3166_1_alpha_2_code= 'CN')
-        # self.China_subdivs = pycountry.subdivisions.get(country_code=alpha2_China)
-        # self.UnitedStates_subdivs = pycountry.subdivisions.get(country_code=alpha2_UnitedStates)
-
-    def get_ISO3166_2_subdivision_code(self, ISO3166_1_alpha_2_code):
-        data_set = list(pycountry.subdivisions.get(country_code= ISO3166_1_alpha_2_code))
-        # data_set = pycountry.subdivisions.get(country_code= ISO3166_1_alpha_2_code)
-        ls_subdivs = []
-        for data_subdiv in data_set:
-            ISO_3166_2_state = data_subdiv.code
-            ls_subdivs.append(ISO_3166_2_state)
+    def get_region_information_by_subdivision(self, ISO3166_1_alpha_2_code):
+        data_set = pycountry.subdivisions.get(country_code= ISO3166_1_alpha_2_code)
+        for i, data_subdiv in enumerate(data_set):
+            ISO_3166_2_state = data_subdiv.code # subdivision code
             stations = Stations()
             country_code, state_code = ISO_3166_2_state.split('-')
-            print(f'country_code / state_code = {country_code} / {state_code}')
             stations = stations.region(country_code, state_code)
-            stations = stations.inventory('monthly')
-            stations = stations.fetch()
-            from utils.pandas_display import Display_Option
-            Display_Option()
-            print(stations.head())
-            print(stations.columns)
-            break
+            df_stations = stations.fetch()
 
-
-
+            if i == 0:
+                df_merge = pd.DataFrame(columns=df_stations.columns)
+            else:
+                df_merge = pd.concat([df_merge, df_stations])
         # stations = Stations()
 
-        return ls_subdivs
+        return df_merge
+
+    def get_weather_data_by_subdivision(self, ISO3166_1_alpha_2_code):
+    # def get_weather_data_by_subdivision(self, ISO3166_1_alpha_2_code, date_from, date_to):
+        df_rgn = self.get_region_information_by_subdivision(ISO3166_1_alpha_2_code)
+        date_from = datetime(2022, 1, 20)
+        date_to = datetime(2022, 3, 30)
+        data = Daily('10637', start=date_from, end=date_to).fetch()
+        print(data)
+
 
 ctr = Countries()
 
-print(ctr.get_ISO3166_2_subdivision_code('CN'))
-print(ctr.get_ISO3166_2_subdivision_code('US'))
-# print(a)
+# print(ctr.rgn_US.columns)
+# print(ctr.rgn_US)
+print(ctr.get_weather_data_by_subdivision('CN'))
