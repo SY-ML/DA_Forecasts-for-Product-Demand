@@ -1,15 +1,14 @@
 from holidays import country_holidays
 import pandas as pd
 
+from main_settings import Path_Settings
+ps = Path_Settings()
+
+
+
 class Holidays():
-    def __init__(self, ls_years):
-        self.ls_years = ls_years # list of dataframe column names
-        self.df_ch_hol = self.df_holidays_by_nation('China') # dataframe of Chinese holidays of the years
-        self.df_us_hol = self.df_holidays_by_nation('UnitedStates') # dataframe of American holidays of the years
+    def __init__(self):
+        self.df_CN = pd.read_csv(f'{ps.path_holidays_directory}/holiday_by_station_China(2012~2016).csv')
+        self.df_US = pd.read_csv(f'{ps.path_holidays_directory}/holiday_by_station_UnitedStates(2012~2016).csv')
 
-    def df_holidays_by_nation(self, nation):
-        data = country_holidays(country=nation, years = self.ls_years, observed=True)
-        df = pd.DataFrame(data.items(), columns=['Date', 'Name'])
-        df = df.sort_values(by='Date')
 
-        return df

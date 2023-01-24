@@ -7,6 +7,9 @@ class Path_Settings():
         # dataset directory
         self.path_dataset_directory = './archive' # original dataset
         self.path_economic_indicators_directory = f'{self.path_dataset_directory}/economic_indicators' # economic indicators
+        self.path_meteostat_directory = f'{self.path_dataset_directory}/meteostat' # economic indicators
+        self.path_holidays_directory = f'{self.path_dataset_directory}/holidays'
+
 
         self.name_dataset = 'Historical Product Demand.csv' #original dadtaset name
         self.name_dataset_processed = 'Historical_Product_Demand_Processed.csv' # to-be dataset name after processing
@@ -30,3 +33,7 @@ class Path_Settings():
                                               'path_merged': f'{self.path_economic_indicators_directory}/IMF_CPI_Merged.csv'
                                               }
                                       }
+
+        self.meteostat_nameformat = 'meteostat_by_station'
+        self.holidays_nameformat = 'holiday_by_station'
+

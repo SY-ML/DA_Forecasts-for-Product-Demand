@@ -53,7 +53,8 @@ class Meteostat_Setup():
         df_rgn = self.get_region_information_by_subdivision(ISO3166_1_alpha_2_code)
 
         # Specify date range
-        date_from, date_to = datetime(2012, 1, 1), datetime(2016, 12, 31)
+        year_from, year_to = 2012, 2016
+        date_from, date_to = datetime(year_from, 1, 1), datetime(year_to, 12, 31)
 
         # Load data by station id
         for i, id in enumerate(df_rgn.index):
@@ -68,5 +69,4 @@ class Meteostat_Setup():
                 df_merge = pd.concat([df_merge, df_daily])
             print(f"PROCESSING {i}/{len(df_rgn)} ")
 
-        df_merge['country'] = ISO3166_1_alpha_2_code
-        df_merge.to_csv(f'{ps.path_meteostat_directory}/{ps.meteostat_nameformat}_{ISO3166_1_alpha_2_code}', index= False)
+        df_merge.to_csv(f'{ps.path_meteostat_directory}/{ps.meteostat_nameformat}_{ISO3166_1_alpha_2_code}({year_from}~{year_to})', index= False)

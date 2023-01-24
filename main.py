@@ -8,10 +8,12 @@ from holidays import country_holidays
 '''SY'''
 from economic_data_setup import Economic_Indicators_Setup
 from dataset_setup import Dataset_Setup
+from meteostat_setup import Meteostat_Setup
+from holidays_setup import Holidays_Setup
 
 from data.dataset import Dataset
-from data.holidays import Holidays
 from data.economic_data import Economic_Indicators
+from data.holidays import Holidays
 
 from data_processor.converter import Converter
 
@@ -43,11 +45,17 @@ path_parquet = './archive/Historical_Product_Demand(Processed).parquet' # path o
 # # Dataset SETUP
 # Dataset_Setup() # Original dataset
 # Economic_Indicators_Setup() # Economic indicators
-cvt = Converter()
+Meteostat_Setup()
+# Holidays_Setup()
+
+# cvt = Converter()
 
 # dataframe to be used for the entire analysis
-ds = Dataset()
-ei = Economic_Indicators()
-
-cci = ei.cci
-cpi = ei.cpi
+# ds = Dataset()
+# print(ds.df)
+# ei = Economic_Indicators()
+# print(ei.cci)
+# print(ei.cpi)
+# hd = Holidays()
+# print(hd.df_CN)
+# print(hd.df_US)
