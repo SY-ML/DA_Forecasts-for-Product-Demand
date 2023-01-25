@@ -28,7 +28,7 @@ class Meteostat_Setup():
         make_direction(ps.path_meteostat_directory)
         country_code_in_alpha2_China = 'CN'
         country_code_in_alpha2_UnitedStates = 'US'
-        self.setup_meteostat_by_country(country_code_in_alpha2_China)
+        # self.setup_meteostat_by_country(country_code_in_alpha2_China)
         self.setup_meteostat_by_country(country_code_in_alpha2_UnitedStates)
 
 
@@ -63,10 +63,11 @@ class Meteostat_Setup():
             df_daily['id'] = id
             df_daily['region'] = df_rgn.at[id, 'region']
             df_daily['name'] = df_rgn.at[id, 'name']
+            path_csv = f'{ps.path_meteostat_directory}/{ps.meteostat_nameformat}_{ISO3166_1_alpha_2_code}({year_from}~{year_to}).csv'
             if i == 0: # in the first loop, get dataframe structure
-                df_merge = df_daily
+                df_daily.to_csv(path_csv, index= False)
             else: # For the rest loops, concat
-                df_merge = pd.concat([df_merge, df_daily])
+                df_daily.to_csv(path_csv, mode= 'a', header= False)
             print(f"PROCESSING {i}/{len(df_rgn)} ")
 
-        df_merge.to_csv(f'{ps.path_meteostat_directory}/{ps.meteostat_nameformat}_{ISO3166_1_alpha_2_code}({year_from}~{year_to})', index= False)
+        # df_merge.to_csv(f'{ps.path_meteostat_directory}/{ps.meteostat_nameformat}_{ISO3166_1_alpha_2_code}({year_from}~{year_to}).csv', index= False)
