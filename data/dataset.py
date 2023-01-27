@@ -4,6 +4,7 @@ from main_settings import Path_Settings
 
 ps = Path_Settings()
 
+
 class Dataset():
     def __init__(self):
         self.df = pd.read_parquet(ps.path_dataset_processed_in_parquet)
