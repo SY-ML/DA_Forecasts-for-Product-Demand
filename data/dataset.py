@@ -7,7 +7,7 @@ ps = Path_Settings()
 
 class Dataset():
     def __init__(self):
-        self.df = pd.read_parquet(ps.path_dataset_processed_in_parquet)
+        self.df = self.read_parquet_and_parse_date()
         self.ttod_pdcd = self.total_order_demand_by('Product_Code')
         self.ttod_pdcat = self.total_order_demand_by('Product_Category')
         self.ttod_date = self.total_order_demand_by('Date')
@@ -15,6 +15,10 @@ class Dataset():
 
         self.pv_dt_pdcd_od = self.pivot_productcode_date_orderdemand()
 
+    def read_parquet_and_parse_date(self):
+        df = pd.read_parquet(ps.path_dataset_processed_in_parquet)
+        df['Date'] = pd.to_datetime(df['Date'], format='%Y-%m-%d')  # string-type date data conversion to datetime type
+        return df
 
     def total_order_demand_by(self, col):
         return self.df.groupby(col, as_index=False)['Order_Demand'].sum()
