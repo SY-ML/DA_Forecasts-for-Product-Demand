@@ -19,12 +19,14 @@ class Economic_Indicators():
     def processed_CCI(self):
         df = self.read_economic_indicator_data('CCI')
         df = df.pivot(index= 'original_period', columns = 'LOCATION', values= 'original_value')
+        df = df.add_prefix('CCI_')
         df = df.reset_index()
         return df
 
     def processed_CPI(self):
         df = self.read_economic_indicator_data('CPI')
         df = df.pivot(index= 'original_period', columns= 'REF_AREA', values= 'original_value')
+        df = df.add_prefix('CPI_')
         df = df.reset_index()
         return df
 
