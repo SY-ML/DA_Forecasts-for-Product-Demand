@@ -10,9 +10,9 @@ class Currency_Setup():
         make_direction(ps.path_currency_directory)
         code_cny_to_usd = 'CNY=X'
         self.start_date, self.end_date = TUPLE_DATEFROM_AND_DATETO()
-        self.load_and_save_daily_data_with_code(code= code_cny_to_usd, basis = 'daily')
-        self.load_and_save_daily_data_with_code(code= code_cny_to_usd, basis = 'weekly')
-        self.load_and_save_daily_data_with_code(code= code_cny_to_usd, basis = 'monthly')
+        self.load_and_save_data_with_code(code= code_cny_to_usd, basis = 'daily')
+        self.load_and_save_data_with_code(code= code_cny_to_usd, basis = 'weekly')
+        self.load_and_save_data_with_code(code= code_cny_to_usd, basis = 'monthly')
 
 
     def get_daily_data_with_code(self, code):
@@ -28,7 +28,7 @@ class Currency_Setup():
         return data
 
 
-    def load_and_save_daily_data_with_code(self, code, basis):
+    def load_and_save_data_with_code(self, code, basis):
         if basis == 'daily':
             data = self.get_daily_data_with_code(code)
         elif basis == 'weekly':
