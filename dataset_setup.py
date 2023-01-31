@@ -49,9 +49,10 @@ class Dataset_Setup():
         df['Month'] = df['Date'].dt.month.astype('Int16')  # 월
         df['DayOW'] = df['Date'].dt.dayofweek.astype('Int16')  # 요일 (day of the week) FYI) Mon 0 - Sun = 6
         df['Year_Month'] = df['Date'].dt.strftime('%Y-%m')  # Time in %Y%m format
-        df['Year_Week'] = df['Date'].dt.strftime('%Y-%W')  # Time in %Y%W format
+        df['Year_Week'] = df['Date'].dt.year.astype(str)+'-'+df['Date'].dt.isocalendar().week.astype(str)  # Time in %Y%m format
 
-        # df['Holiday'] = np.where(df[df['Date']])
+        # Save data generated between 2012 and 2016 only
+        df = df.loc[(df['Year']>=2012)&(df['Year']<=2016)]
 
         df.to_csv(self.path_prcd, index=False)
 
