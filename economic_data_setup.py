@@ -15,6 +15,7 @@ class Economic_Indicators_Setup():
         self.make_direction()
         self.CCI = self.load_data_then_save('CCI')
         self.CPI = self.load_data_then_save('CPI')
+        self.GDP = self.load_data_then_save('GDP')
 
     def make_direction(self):
         try:
