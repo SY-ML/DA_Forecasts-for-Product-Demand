@@ -10,6 +10,7 @@ class Economic_Indicators():
 
         self.cci = self.processed_CCI()
         self.cpi = self.processed_CPI()
+        self.gdp = self.processed_GDP()
 
     def read_economic_indicator_data(self, index_name):
         path = ps.index_format_and_country_code[index_name]['path_merged']
@@ -30,3 +31,12 @@ class Economic_Indicators():
         df = df.reset_index()
         return df
 
+    def processed_GDP(self):
+        df = self.read_economic_indicator_data('GDP')
+        df = df.pivot(index='original_period', columns='LOCATION', values='original_value')
+        # df = df.shift(periods=-1)
+        # df.dropna(inplace=True)
+        # df = df.add_prefix('PevYrGDP_')
+        df = df.add_prefix('AnnGDP_')
+        df = df.reset_index()
+        return df
