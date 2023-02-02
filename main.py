@@ -27,6 +27,8 @@ from data.meteostat import MeteoStats
 
 from data_processor.converter import Converter
 
+from utils.pandas_related import pandas_display_all
+
 import matplotlib.style as style
 style.use(['seaborn'])
 
@@ -58,10 +60,8 @@ path_parquet = './archive/Historical_Product_Demand(Processed).parquet' # path o
 # Holidays_Setup()
 # Currency_Setup()
 # cvt = Converter()
-
 # dataframe to be used for the entire analysis
 ds = Dataset()
-
 # Product demand dataset
 df_pd = ds.df
 # print(df_pd)
@@ -71,22 +71,29 @@ ei = Economic_Indicators()
 # CCI and CPI dataset
 df_cci = ei.cci
 df_cpi = ei.cpi
+df_gdp = ei.gdp
 # print(df_cci)
 # print(df_cpi)
+# print(df_gdp)
 
 hd = Holidays()
+
 # Chinese and American holidays
 df_hd = hd.calendar
 # print(df_hd)
 
-cy = Currencies()
-df_cny2usd = cy.cny_to_usd
-# print(df_cny2usd)
+# cy = Currencies()
+# df_cny2usd_daily = cy.cny_to_usd_d
+# df_cny2usd_weekly = cy.cny_to_usd_w
+# df_cny2usd_monthly = cy.cny_to_usd_m
 
+# exit()
 ms = MeteoStats()
 df_meteo_CN = ms.cn
+df_meteo_US = ms.us
 # print(df_meteo_CN)
-
+print(df_meteo_US)
+exit()
 """
 Dataset preprocessing - merge
 """
@@ -99,28 +106,34 @@ df.drop(columns='original_period', inplace=True) # drop duplicated data
 df = df.merge(df_cpi, left_on='Year_Month', right_on='original_period', how='left')
 df.drop(columns='original_period', inplace=True) # drop duplicated data
 
+df = df.merge(df_gdp, left_on='Year', right_on='original_period', how='left')
+df.drop(columns='original_period', inplace=True) # drop duplicated data
+
 # merge with holidays on Date column
 df = df.merge(df_hd, how='left', on='Date')
 
+""" 
+HOLD: 데이터 양식문제로 완전한 merge가 되지 않음
 # merge with CNY to USD rate
-df = df.merge(df_cny2usd, on='Date', how='left')
+# df = df.merge(df_cny2usd_daily, on='Date', how='left')
+df = df.merge(df_cny2usd_monthly, left_on='Year_Month', right_on='Date', how='left')
+"""
 
-data = yf.download('CNY=X', start = '2021-01-01', end = '2022-12-31', interval='1wk')
-# todo - 화폐 주단위로 바꿔주기
-
-print(data)
-# print(df_cny2usd.isnull().sum())
-# print(df.isnull().sum())
-# print(df[df['Open(CNY=X)'].isnull()][['Date', 'Open(CNY=X)']])
-# print(df_cny2usd.columns)
-# print(df_cny2usd)
-# merge with Chinese average temperature by region
-# df = df.merge()
+# merge with Chinese meteostats
+df = df.merge(df_meteo_CN, left_on='Date', right_on='time')
+# df = df[['Date', 'Order_Demand']].merge(df_meteo_CN, left_on='Date', right_on='time')
+df.drop(columns=['time'], inplace=True)
 # print(df)
-# print(df.columns)
+print(df.columns)
+# print(df.dtypes)
+# print(df['Date'].value_counts())
 
-
-exit()
-#
-sns.heatmap(df_prcd.corr(), cmap='RdBu', vmin=-1, vmax=1, annot=True, fmt='.2f')
-plt.show()
+# TODO - 날짜와 지역 간 상관관계 분석
+# print(df_meteo_CN)
+# pandas_display_all()
+# print(df.corr())
+# plt.plot(df)
+# df.plot()
+# sns.lineplot(df, x='Date', y='Order_Demand')
+# sns.heatmap(df.corr(), cmap='RdBu', vmin=-1, vmax=1, annot=True, fmt='.2f')
+# plt.show()
