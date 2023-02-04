@@ -67,7 +67,7 @@ class Meteostat_Setup():
             if i == 0: # in the first loop, get dataframe structure
                 df_daily.to_csv(path_csv, index= False)
             else: # For the rest loops, concat
-                df_daily.to_csv(path_csv, mode= 'a', header= False)
+                df_daily.to_csv(path_csv, mode= 'a', header= False, index=False)
             print(f"PROCESSING {i}/{len(df_rgn)} ")
 
         # df_merge.to_csv(f'{ps.path_meteostat_directory}/{ps.meteostat_nameformat}_{ISO3166_1_alpha_2_code}({year_from}~{year_to}).csv', index= False)
