@@ -91,7 +91,7 @@ df_hd = hd.calendar
 ms = MeteoStats()
 df_meteo_CN = ms.cn
 df_meteo_US = ms.us
-# print(df_meteo_CN)
+print(df_meteo_CN)
 print(df_meteo_US)
 exit()
 """
@@ -121,19 +121,18 @@ df = df.merge(df_cny2usd_monthly, left_on='Year_Month', right_on='Date', how='le
 
 # merge with Chinese meteostats
 df = df.merge(df_meteo_CN, left_on='Date', right_on='time')
-# df = df[['Date', 'Order_Demand']].merge(df_meteo_CN, left_on='Date', right_on='time')
 df.drop(columns=['time'], inplace=True)
-# print(df)
+df = df.merge(df_meteo_US, left_on='Date', right_on='time')
+df.drop(columns=['time'], inplace=True)
+
+print(df)
 print(df.columns)
-# print(df.dtypes)
-# print(df['Date'].value_counts())
 
 # TODO - 날짜와 지역 간 상관관계 분석
 print(df_meteo_CN)
 pandas_display_all()
 print(df.corr())
 plt.plot(df)
-df.plot()
 sns.lineplot(df, x='Date', y='Order_Demand')
 sns.heatmap(df.corr(), cmap='RdBu', vmin=-1, vmax=1, annot=True, fmt='.2f')
 plt.show()
