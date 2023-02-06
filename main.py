@@ -7,6 +7,9 @@ from pandas_datareader import yahoo
 import pandas_datareader.data as web
 import yfinance as yf
 
+from tsfresh import extract_relevant_features
+from tsfresh import select_features
+from tsfresh.utilities.dataframe_functions import  impute
 
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -93,7 +96,7 @@ df_meteo_CN = ms.cn
 df_meteo_US = ms.us
 print(df_meteo_CN)
 print(df_meteo_US)
-exit()
+# exit()
 """
 Dataset preprocessing - merge
 """
@@ -122,17 +125,23 @@ df = df.merge(df_cny2usd_monthly, left_on='Year_Month', right_on='Date', how='le
 # merge with Chinese meteostats
 df = df.merge(df_meteo_CN, left_on='Date', right_on='time')
 df.drop(columns=['time'], inplace=True)
-df = df.merge(df_meteo_US, left_on='Date', right_on='time')
-df.drop(columns=['time'], inplace=True)
+# df = df.merge(df_meteo_US, left_on='Date', right_on='time')
+# df.drop(columns=['time'], inplace=True)
 
 print(df)
 print(df.columns)
 
-# TODO - 날짜와 지역 간 상관관계 분석
-print(df_meteo_CN)
-pandas_display_all()
-print(df.corr())
-plt.plot(df)
-sns.lineplot(df, x='Date', y='Order_Demand')
-sns.heatmap(df.corr(), cmap='RdBu', vmin=-1, vmax=1, annot=True, fmt='.2f')
-plt.show()
+features = extract_relevant_features(df, column_id='Order_Demand', column_sort='Date')
+impute(features)
+features_filtered = select_features(features, df['Order_Demand'])
+
+print(features_filtered)
+
+# # TODO - 날짜와 지역 간 상관관계 분석
+# print(df_meteo_CN)
+# pandas_display_all()
+# print(df.corr())
+# plt.plot(df)
+# sns.lineplot(df, x='Date', y='Order_Demand')
+# sns.heatmap(df.corr(), cmap='RdBu', vmin=-1, vmax=1, annot=True, fmt='.2f')
+# plt.show()
