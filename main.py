@@ -7,7 +7,7 @@ from pandas_datareader import yahoo
 import pandas_datareader.data as web
 import yfinance as yf
 
-from tsfresh import extract_relevant_features
+from tsfresh import extract_features
 from tsfresh import select_features
 from tsfresh.utilities.dataframe_functions import  impute
 
@@ -131,9 +131,19 @@ df.drop(columns=['time'], inplace=True)
 print(df)
 print(df.columns)
 
-features = extract_relevant_features(df, column_id='Order_Demand', column_sort='Date')
+print(df.isnull().sum())
+
+# x = df.copy().drop(columns='Order_Demand')
+# y = df.copy()['Order_Demand']
+
+
+features = extract_features(df, column_id=' ', column_sort=' ', column_value=' ', column_kind=' ')
+exit()
+# features = extract_features(x, y)
+# features = extract_relevant_features(x, column_id=x.index, column_sort='Date', y= y)
+# features = extract_relevant_features(x, column_id=x.index, column_sort='Date', y= y)
 impute(features)
-features_filtered = select_features(features, df['Order_Demand'])
+features_filtered = select_features(features, y)
 
 print(features_filtered)
 
