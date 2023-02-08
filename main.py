@@ -133,11 +133,16 @@ print(df.columns)
 
 print(df.isnull().sum())
 
-# x = df.copy().drop(columns='Order_Demand')
-# y = df.copy()['Order_Demand']
+x = df.copy().drop(columns='Order_Demand')
+y = df.copy()['Order_Demand']
+print(x, y)
 
+# column_id added
+x['idx'] = x.index
+print(x)
+features = extract_features(x, y, column_id='idx', column_sort='Date')
+print(features)
 
-features = extract_features(df, column_id=' ', column_sort=' ', column_value=' ', column_kind=' ')
 exit()
 # features = extract_features(x, y)
 # features = extract_relevant_features(x, column_id=x.index, column_sort='Date', y= y)
