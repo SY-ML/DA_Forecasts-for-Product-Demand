@@ -7,7 +7,7 @@ from pandas_datareader import yahoo
 import pandas_datareader.data as web
 import yfinance as yf
 
-from tsfresh import extract_features
+from tsfresh import extract_features, extract_relevant_features
 from tsfresh import select_features
 from tsfresh.utilities.dataframe_functions import  impute
 
@@ -139,24 +139,4 @@ print(x, y)
 
 # column_id added
 x['idx'] = x.index
-print(x)
-features = extract_features(x, y, column_id='idx', column_sort='Date')
-print(features)
-
-exit()
-# features = extract_features(x, y)
-# features = extract_relevant_features(x, column_id=x.index, column_sort='Date', y= y)
-# features = extract_relevant_features(x, column_id=x.index, column_sort='Date', y= y)
-impute(features)
-features_filtered = select_features(features, y)
-
-print(features_filtered)
-
-# # TODO - 날짜와 지역 간 상관관계 분석
-# print(df_meteo_CN)
-# pandas_display_all()
-# print(df.corr())
-# plt.plot(df)
-# sns.lineplot(df, x='Date', y='Order_Demand')
-# sns.heatmap(df.corr(), cmap='RdBu', vmin=-1, vmax=1, annot=True, fmt='.2f')
-# plt.show()
+features = extract_relevant_features(x, y, column_id='idx', column_sort='Date')
