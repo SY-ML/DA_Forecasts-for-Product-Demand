@@ -143,3 +143,5 @@ features = extract_relevant_features(x, y, column_id='idx', column_sort='Date')
 
 
 ### TODO - Data transformation : target encoding & normalization, standardization, or boxcox
+
+### ToDO - Data smoothing
