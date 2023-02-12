@@ -94,8 +94,8 @@ df_hd = hd.calendar
 ms = MeteoStats()
 df_meteo_CN = ms.cn
 df_meteo_US = ms.us
-print(df_meteo_CN)
-print(df_meteo_US)
+# print(df_meteo_CN)
+# print(df_meteo_US)
 # exit()
 """
 Dataset preprocessing - merge
@@ -139,9 +139,26 @@ print(x, y)
 
 # column_id added
 x['idx'] = x.index
-features = extract_relevant_features(x, y, column_id='idx', column_sort='Date')
+# features = extract_relevant_features(x, y, column_id='idx', column_sort='Date')
 
+
+### TODO - Data Dat encoding : target encoding & normalization, standardization, or boxcox
+"""
+Product_Code, Product_Category, DAYOW, 
+"""
 
 ### TODO - Data transformation : target encoding & normalization, standardization, or boxcox
+
+from category_encoders import BinaryEncoder, OneHotEncoder
+
+print(x.columns)
+print(x[['Product_Code', 'Product_Category', 'DayOW']].nunique())
+
+ecd_oh = OneHotEncoder(cols=['DayOW'])
+ecd_oh.fit_transform(x ,y)
+
+print(ecd_oh)
+
+
 
 ### ToDO - Data smoothing
