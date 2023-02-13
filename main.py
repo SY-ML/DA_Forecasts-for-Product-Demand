@@ -155,10 +155,16 @@ print(x.columns)
 print(x[['Product_Code', 'Product_Category', 'DayOW']].nunique())
 
 ecd_oh = OneHotEncoder(cols=['DayOW'])
-ecd_oh.fit_transform(x ,y)
 
-print(ecd_oh)
+# one-hot conding
+df_oh = ecd_oh.fit_transform(x)
 
+# binary encoding
 
+ecd_bn = BinaryEncoder(cols=['Product_Category'])
+df_bn = ecd_bn.fit_transform(df_oh)
+
+print(ecd_bn)
+print(ecd_bn.columns)
 
 ### ToDO - Data smoothing
