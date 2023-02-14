@@ -32,6 +32,8 @@ from data_processor.converter import Converter
 
 from utils.pandas_related import pandas_display_all
 
+from category_encoders import BinaryEncoder, OneHotEncoder
+
 import matplotlib.style as style
 style.use(['seaborn'])
 
@@ -130,41 +132,28 @@ df.drop(columns=['time'], inplace=True)
 
 print(df)
 print(df.columns)
+# exit()
+# print(df.isnull().sum())
 
-print(df.isnull().sum())
+# Binary Encoding : categorical values
+be = BinaryEncoder(cols=['Product_Code', 'Warehouse', 'Product_Category', 'Year', 'Quarter', 'Month', 'Half', 'Week', 'DayOW'])
+df = be.fit_transform(df)
+print(df.columns)
 
 x = df.copy().drop(columns='Order_Demand')
 y = df.copy()['Order_Demand']
 print(x, y)
 
 # column_id added
-x['idx'] = x.index
+# x['idx'] = x.index
 # features = extract_relevant_features(x, y, column_id='idx', column_sort='Date')
+# print(features)
+
+### ToDO - Data smoothing
 
 
-### TODO - Data Dat encoding : target encoding & normalization, standardization, or boxcox
-"""
-Product_Code, Product_Category, DAYOW, 
-"""
 
 ### TODO - Data transformation : target encoding & normalization, standardization, or boxcox
 
-from category_encoders import BinaryEncoder, OneHotEncoder
 
-print(x.columns)
-print(x[['Product_Code', 'Product_Category', 'DayOW']].nunique())
 
-ecd_oh = OneHotEncoder(cols=['DayOW'])
-
-# one-hot conding
-df_oh = ecd_oh.fit_transform(x)
-
-# binary encoding
-
-ecd_bn = BinaryEncoder(cols=['Product_Category'])
-df_bn = ecd_bn.fit_transform(df_oh)
-
-print(ecd_bn)
-print(ecd_bn.columns)
-
-### ToDO - Data smoothing
