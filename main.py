@@ -50,110 +50,115 @@ def timeit(func):
         return result
     return timeit_wrapper
 
+if __name__ == '__main__':
 
-path_dataset_directory = './archive'
-path = './archive/Historical Product Demand.csv' # path of the original dataset
-path_prcd = './archive/Historical Product Demand(Processed).csv' #path of dataset to be processed
-path_parquet = './archive/Historical_Product_Demand(Processed).parquet' # path of the dataset to be processed in a parquet format
+    path_dataset_directory = './archive'
+    path = './archive/Historical Product Demand.csv' # path of the original dataset
+    path_prcd = './archive/Historical Product Demand(Processed).csv' #path of dataset to be processed
+    path_parquet = './archive/Historical_Product_Demand(Processed).parquet' # path of the dataset to be processed in a parquet format
 
-# Generation of dataset with conversion and time feature additions in parquet format
-# TODO-Inactivate after generation
-# # Dataset SETUP
-# Dataset_Setup() # Original dataset
-# Economic_Indicators_Setup() # Economic indicators
-# Meteostat_Setup()
-# Holidays_Setup()
-# Currency_Setup()
-# cvt = Converter()
-# dataframe to be used for the entire analysis
-ds = Dataset()
-# Product demand dataset
-df_pd = ds.df
-# print(df_pd)
+    # Generation of dataset with conversion and time feature additions in parquet format
+    # TODO-Inactivate after generation
+    # # Dataset SETUP
+    # Dataset_Setup() # Original dataset
+    # Economic_Indicators_Setup() # Economic indicators
+    # Meteostat_Setup()
+    # Holidays_Setup()
+    # Currency_Setup()
+    # cvt = Converter()
+    # dataframe to be used for the entire analysis
+    ds = Dataset()
+    # Product demand dataset
+    df_pd = ds.df
+    # print(df_pd)
 
-ei = Economic_Indicators()
+    ei = Economic_Indicators()
 
-# CCI and CPI dataset
-df_cci = ei.cci
-df_cpi = ei.cpi
-df_gdp = ei.gdp
-# print(df_cci)
-# print(df_cpi)
-# print(df_gdp)
+    # CCI and CPI dataset
+    df_cci = ei.cci
+    df_cpi = ei.cpi
+    df_gdp = ei.gdp
+    # print(df_cci)
+    # print(df_cpi)
+    # print(df_gdp)
 
-hd = Holidays()
+    hd = Holidays()
 
-# Chinese and American holidays
-df_hd = hd.calendar
-# print(df_hd)
+    # Chinese and American holidays
+    df_hd = hd.calendar
+    # print(df_hd)
 
-# cy = Currencies()
-# df_cny2usd_daily = cy.cny_to_usd_d
-# df_cny2usd_weekly = cy.cny_to_usd_w
-# df_cny2usd_monthly = cy.cny_to_usd_m
+    # cy = Currencies()
+    # df_cny2usd_daily = cy.cny_to_usd_d
+    # df_cny2usd_weekly = cy.cny_to_usd_w
+    # df_cny2usd_monthly = cy.cny_to_usd_m
 
-# exit()
-ms = MeteoStats()
-df_meteo_CN = ms.cn
-df_meteo_US = ms.us
-# print(df_meteo_CN)
-# print(df_meteo_US)
-# exit()
-"""
-Dataset preprocessing - merge
-"""
+    ms = MeteoStats()
+    df_meteo_CN = ms.cn
+    df_meteo_US = ms.us
+    # print(df_meteo_CN)
+    # print(df_meteo_US)
 
-# merge with CCI on YYYY-MM
-df = df_pd.merge(df_cci, left_on='Year_Month', right_on='original_period', how='left')
-df.drop(columns='original_period', inplace=True) # drop duplicated data
+    """
+    Dataset preprocessing - merge
+    """
 
-# merge with CPI on YYYY-MM
-df = df.merge(df_cpi, left_on='Year_Month', right_on='original_period', how='left')
-df.drop(columns='original_period', inplace=True) # drop duplicated data
+    # merge with CCI on YYYY-MM
+    df = df_pd.merge(df_cci, left_on='Year_Month', right_on='original_period', how='left')
+    df.drop(columns='original_period', inplace=True) # drop duplicated data
 
-df = df.merge(df_gdp, left_on='Year', right_on='original_period', how='left')
-df.drop(columns='original_period', inplace=True) # drop duplicated data
+    # merge with CPI on YYYY-MM
+    df = df.merge(df_cpi, left_on='Year_Month', right_on='original_period', how='left')
+    df.drop(columns='original_period', inplace=True) # drop duplicated data
 
-# merge with holidays on Date column
-df = df.merge(df_hd, how='left', on='Date')
+    df = df.merge(df_gdp, left_on='Year', right_on='original_period', how='left')
+    df.drop(columns='original_period', inplace=True) # drop duplicated data
 
-""" 
-HOLD: 데이터 양식문제로 완전한 merge가 되지 않음
-# merge with CNY to USD rate
-# df = df.merge(df_cny2usd_daily, on='Date', how='left')
-df = df.merge(df_cny2usd_monthly, left_on='Year_Month', right_on='Date', how='left')
-"""
+    # merge with holidays on Date column
+    df = df.merge(df_hd, how='left', on='Date')
 
-# merge with Chinese meteostats
-df = df.merge(df_meteo_CN, left_on='Date', right_on='time')
-df.drop(columns=['time'], inplace=True)
-# df = df.merge(df_meteo_US, left_on='Date', right_on='time')
-# df.drop(columns=['time'], inplace=True)
+    """ 
+    HOLD: 데이터 양식문제로 완전한 merge가 되지 않음
+    # merge with CNY to USD rate
+    # df = df.merge(df_cny2usd_daily, on='Date', how='left')
+    df = df.merge(df_cny2usd_monthly, left_on='Year_Month', right_on='Date', how='left')
+    """
 
-print(df)
-print(df.columns)
-# exit()
-# print(df.isnull().sum())
+    # merge with Chinese meteostats
+    df = df.merge(df_meteo_CN, left_on='Date', right_on='time')
+    df.drop(columns=['time'], inplace=True)
+    # df = df.merge(df_meteo_US, left_on='Date', right_on='time')
+    # df.drop(columns=['time'], inplace=True)
 
-# Binary Encoding : categorical values
-be = BinaryEncoder(cols=['Product_Code', 'Warehouse', 'Product_Category', 'Year', 'Quarter', 'Month', 'Half', 'Week', 'DayOW'])
-df = be.fit_transform(df)
-print(df.columns)
+    print(df)
+    print(df.columns)
+    # exit()
+    # print(df.isnull().sum())
 
-x = df.copy().drop(columns='Order_Demand')
-y = df.copy()['Order_Demand']
-print(x, y)
+    # Binary Encoding : categorical values
+    be = BinaryEncoder(cols=['Product_Code', 'Warehouse', 'Product_Category', 'Year', 'Quarter', 'Month', 'Half', 'Week', 'DayOW'])
+    df = be.fit_transform(df)
+    print(df.columns)
 
-# column_id added
-# x['idx'] = x.index
-# features = extract_relevant_features(x, y, column_id='idx', column_sort='Date')
-# print(features)
+    x = df.copy()[['Date', 'Holiday_CN', 'Holiday_US']]
+    # x = df.copy().drop(columns='Order_Demand')
+    y = df.copy()['Order_Demand']
+    print(x, y)
 
-### ToDO - Data smoothing
+    ### ToDo - filling unobserved rows
 
 
+    # column_id added
+    x['idx'] = x.index
+    # features = extract_features(x, y, column_id='idx', column_sort='Date', pivot= False)
+    features = extract_relevant_features(x, y, column_id='idx', column_sort='Date')
+    print(features)
 
-### TODO - Data transformation : target encoding & normalization, standardization, or boxcox
+    ### ToDO - Data smoothing
+
+
+
+    ### TODO - Data transformation : target encoding & normalization, standardization, or boxcox
 
 
 

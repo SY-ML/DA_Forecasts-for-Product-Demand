@@ -12,7 +12,7 @@ class MeteoStats():
 
     def read_and_process_csv_file(self, path, prefix):
 
-        df = pd.read_csv(path, parse_dates=['time'], on_bad_lines='skip')
+        df = pd.read_csv(path, parse_dates=['time'], on_bad_lines='skip', low_memory=False)
         '''
         #TODO-Handle the error
         The following issued was handled by setting on_bad_lines as skip
