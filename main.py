@@ -161,4 +161,9 @@ if __name__ == '__main__':
     ### TODO - Data transformation : target encoding & normalization, standardization, or boxcox
 
 
+    ### TODO - Build models
+    # a. total demand forecasting
+    # b. demand forecasting by warehouse
+    # c. demand forecasting by product
+    # d. anomaly prediction
 
